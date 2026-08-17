@@ -13,14 +13,17 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@flux/ai": "workspace:*",
     "@flux/analytics": "workspace:*",
     "@flux/design-tokens": "workspace:*",
+    "@flux/graph": "workspace:*",
     "@flux/signaling": "workspace:*",
     "@flux/transfer": "workspace:*",
     "@flux/types": "workspace:*",
     "@flux/ui": "workspace:*",
     "@flux/utils": "workspace:*",
     "@flux/validation": "workspace:*",
+    "@supabase/supabase-js": "^2.49.1",
     "@tanstack/react-query": "^5.66.0",
     "framer-motion": "^12.4.7",
     "react": "19.0.0",

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { FluxVisualState } from '@flux/types';
+import type { FluxVisualState, ItemType } from '@flux/types';
 import { FluxVisualStateSchema } from '@flux/validation';
 
 export interface InboxEntry {
@@ -8,6 +8,31 @@ export interface InboxEntry {
   sizeBytes: number;
   mimeType: string;
   createdAt: string;
+  type?: ItemType;
+  summary?: string;
+  entities?: Array<{ type: string; name: string }>;
+  actions?: Array<{ id: string; label: string }>;
+}
+
+const INBOX_KEY = 'flux.inbox';
+
+function readInbox(): InboxEntry[] {
+  if (typeof localStorage === 'undefined') {
+    return [];
+  }
+  try {
+    const raw = localStorage.getItem(INBOX_KEY);
+    return raw ? (JSON.parse(raw) as InboxEntry[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeInbox(inbox: InboxEntry[]) {
+  if (typeof localStorage === 'undefined') {
+    return;
+  }
+  localStorage.setItem(INBOX_KEY, JSON.stringify(inbox));
 }
 
 interface FluxStore {
@@ -18,6 +43,7 @@ interface FluxStore {
   connected: boolean;
   lastError: string | null;
   inbox: InboxEntry[];
+  userEmail: string | null;
   setVisualState: (state: FluxVisualState) => void;
   setPairing: (input: {
     role: 'host' | 'guest';
@@ -27,6 +53,8 @@ interface FluxStore {
   setConnected: (connected: boolean) => void;
   setLastError: (message: string | null) => void;
   addInboxItem: (item: InboxEntry) => void;
+  updateInboxItem: (id: string, patch: Partial<InboxEntry>) => void;
+  setUserEmail: (email: string | null) => void;
   resetPairing: () => void;
 }
 
@@ -37,7 +65,8 @@ export const useFluxStore = create<FluxStore>((set) => ({
   pairingToken: null,
   connected: false,
   lastError: null,
-  inbox: [],
+  inbox: readInbox(),
+  userEmail: null,
   setVisualState: (visualState) => {
     FluxVisualStateSchema.parse(visualState);
     set({ visualState });
@@ -51,7 +80,19 @@ export const useFluxStore = create<FluxStore>((set) => ({
     }),
   setConnected: (connected) => set({ connected }),
   setLastError: (lastError) => set({ lastError }),
-  addInboxItem: (item) => set((state) => ({ inbox: [item, ...state.inbox] })),
+  addInboxItem: (item) =>
+    set((state) => {
+      const inbox = [item, ...state.inbox.filter((entry) => entry.id !== item.id)];
+      writeInbox(inbox);
+      return { inbox };
+    }),
+  updateInboxItem: (id, patch) =>
+    set((state) => {
+      const inbox = state.inbox.map((entry) => (entry.id === id ? { ...entry, ...patch } : entry));
+      writeInbox(inbox);
+      return { inbox };
+    }),
+  setUserEmail: (userEmail) => set({ userEmail }),
   resetPairing: () =>
     set({
       role: null,

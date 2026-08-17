@@ -8,3 +8,5 @@ export { createLoopbackPair } from './loopback';
 export { receiveTransfer, sendTransfer } from './session';
 export type { ReceivedTransfer } from './session';
 export { WebRtcTransport } from './webrtc';
+export { resolveIceServers } from './ice';
+export type { IceEnv } from './ice';

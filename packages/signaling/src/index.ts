@@ -10,3 +10,6 @@ export {
 } from './pairing';
 export { createInMemorySignalingHub } from './in-memory';
 export { createBroadcastSignalingClient } from './broadcast';
+export { createBroadcastRelay, createMemoryRelay } from './relay';
+export type { SignalRelay } from './relay';
+export { createRelayedSignalingClient } from './relayed';

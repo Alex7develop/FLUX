@@ -1,10 +1,13 @@
-import { createBroadcastSignalingClient, type SignalingClient } from '@flux/signaling';
+import { LocalAIProcessor, understandFile } from '@flux/ai';
+import type { SignalingClient } from '@flux/signaling';
 import { WebRtcTransport, receiveTransfer, sendTransfer } from '@flux/transfer';
 import type { TransferTransport } from '@flux/transfer';
 import { createId } from '@flux/utils';
 import { useFluxStore } from '../../store/useFluxStore';
+import { iceServersFromEnv } from './iceFromEnv';
 import { storeInboxBlob } from './inboxBlobs';
 import { runLocalTransfer } from './runLocalTransfer';
+import { createAppSignalingClient } from './signalingFactory';
 
 const peerId = createId('peer');
 
@@ -16,7 +19,12 @@ function store(): ReturnType<typeof useFluxStore.getState> {
   return useFluxStore.getState();
 }
 
-function rememberTransfer(result: { manifest: { id: string; fileName: string; mimeType: string; size: number }; bytes: ArrayBuffer }) {
+const processor = new LocalAIProcessor();
+
+function rememberTransfer(result: {
+  manifest: { id: string; fileName: string; mimeType: string; size: number };
+  bytes: ArrayBuffer;
+}) {
   storeInboxBlob(result.manifest.id, new Blob([result.bytes], { type: result.manifest.mimeType }));
   store().addInboxItem({
     id: result.manifest.id,
@@ -25,6 +33,29 @@ function rememberTransfer(result: { manifest: { id: string; fileName: string; mi
     mimeType: result.manifest.mimeType,
     createdAt: new Date().toISOString(),
   });
+}
+
+async function enrichItem(
+  id: string,
+  input: { fileName: string; mimeType: string; bytes: ArrayBuffer },
+) {
+  const text = input.mimeType.startsWith('text/')
+    ? new TextDecoder().decode(input.bytes)
+    : undefined;
+  store().setVisualState('processing');
+  const understanding = await understandFile(processor, {
+    fileName: input.fileName,
+    mimeType: input.mimeType,
+    text,
+  });
+  store().updateInboxItem(id, {
+    title: understanding.title,
+    type: understanding.type,
+    summary: understanding.summary,
+    entities: understanding.entities,
+    actions: understanding.actions,
+  });
+  store().setVisualState('understood');
 }
 
 async function listenForIncoming() {
@@ -40,6 +71,11 @@ async function listenForIncoming() {
           onStart: () => store().setVisualState('receiving'),
         });
         rememberTransfer(result);
+        await enrichItem(result.manifest.id, {
+          fileName: result.manifest.fileName,
+          mimeType: result.manifest.mimeType,
+          bytes: result.bytes,
+        });
         store().setVisualState('success');
       } catch {
         if (store().connected && transport === current) {
@@ -57,7 +93,7 @@ async function listenForIncoming() {
 export async function startHostPairing(): Promise<string> {
   signaling?.close();
   transport?.close();
-  signaling = createBroadcastSignalingClient(peerId);
+  signaling = await createAppSignalingClient(peerId);
   const session = await signaling.createSession();
   store().setPairing({ role: 'host', sessionId: session.id, pairingToken: session.token });
   store().setVisualState('pairing');
@@ -68,6 +104,7 @@ export async function startHostPairing(): Promise<string> {
     signaling,
     sessionId: session.id,
     peerId,
+    iceServers: iceServersFromEnv(),
   });
 
   void transport
@@ -88,7 +125,7 @@ export async function startHostPairing(): Promise<string> {
 export async function joinPairing(token: string): Promise<void> {
   signaling?.close();
   transport?.close();
-  signaling = createBroadcastSignalingClient(peerId);
+  signaling = await createAppSignalingClient(peerId);
   const session = await signaling.joinSession(token.trim());
   store().setPairing({ role: 'guest', sessionId: session.id });
   store().setVisualState('pairing');
@@ -98,6 +135,7 @@ export async function joinPairing(token: string): Promise<void> {
     signaling,
     sessionId: session.id,
     peerId,
+    iceServers: iceServersFromEnv(),
   });
 
   try {
@@ -146,13 +184,16 @@ export async function transferFiles(files: File[], text?: string): Promise<void>
   store().setVisualState('processing');
 
   try {
-    if (transport && store().connected) {
-      const manifest = await sendTransfer(transport, input);
-      rememberTransfer({ manifest, bytes });
-    } else {
-      const result = await runLocalTransfer(input);
-      rememberTransfer(result);
-    }
+    const transferred =
+      transport && store().connected
+        ? { manifest: await sendTransfer(transport, input), bytes }
+        : await runLocalTransfer(input);
+    rememberTransfer(transferred);
+    await enrichItem(transferred.manifest.id, {
+      fileName: transferred.manifest.fileName,
+      mimeType: transferred.manifest.mimeType,
+      bytes: transferred.bytes,
+    });
     store().setVisualState('success');
     window.setTimeout(() => {
       store().setVisualState(store().connected ? 'connected' : 'idle');

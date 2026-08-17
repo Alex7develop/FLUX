@@ -29,6 +29,13 @@ test('two tabs can pair with a connection code', async ({ browser }) => {
   await context.close();
 });
 
+test('search and graph routes render', async ({ page }) => {
+  await page.goto('/app/search');
+  await expect(page.getByRole('heading', { name: 'Search' })).toBeVisible();
+  await page.goto('/app/graph');
+  await expect(page.getByRole('heading', { name: 'Graph' })).toBeVisible();
+});
+
 test('devices page can create a pairing code', async ({ page }) => {
   await page.goto('/app/devices');
   await expect(page.getByRole('heading', { name: 'Devices' })).toBeVisible();

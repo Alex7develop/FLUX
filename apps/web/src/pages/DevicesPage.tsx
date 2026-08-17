@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { disconnectPairing, joinPairing, startHostPairing } from '../features/transfer/runtime';
+import { signalingMode } from '../features/transfer/signalingFactory';
 import { useFluxStore } from '../store/useFluxStore';
 
 export function DevicesPage() {
@@ -9,14 +11,29 @@ export function DevicesPage() {
   const lastError = useFluxStore((state) => state.lastError);
   const [joinCode, setJoinCode] = useState('');
   const [busy, setBusy] = useState(false);
+  const [params] = useSearchParams();
+  const networked = signalingMode() === 'supabase';
+  const autoJoined = useRef(false);
+
+  useEffect(() => {
+    const incoming = params.get('join');
+    if (!incoming || connected || autoJoined.current) {
+      return;
+    }
+    autoJoined.current = true;
+    setJoinCode(incoming.toUpperCase());
+    setBusy(true);
+    void joinPairing(incoming).finally(() => setBusy(false));
+  }, [connected, params]);
 
   return (
     <main className="mx-auto flex min-h-[70vh] max-w-xl flex-col justify-center px-6 py-16">
       <p className="font-mono text-[11px] tracking-[0.24em] text-mute uppercase">Pairing</p>
       <h1 className="mt-4 text-4xl font-semibold tracking-tight">Devices</h1>
       <p className="mt-4 text-mute">
-        Create a code on this computer, then join it from another FLUX tab. The file bytes travel
-        over a WebRTC data channel, not through a FLUX server.
+        {networked
+          ? 'This project uses Supabase Realtime for signaling. Open the join link on a phone to connect across networks.'
+          : 'Without Supabase keys, pairing stays in this browser. Add Realtime + TURN to reach a phone on another network.'}
       </p>
 
       <div className="mt-10 grid gap-3">
@@ -33,12 +50,24 @@ export function DevicesPage() {
         </button>
 
         {pairingToken ? (
-          <p
-            className="rounded-[24px] border border-line bg-surface/70 px-6 py-5 text-center font-mono text-3xl tracking-[0.28em]"
-            data-testid="pairing-code"
-          >
-            {pairingToken}
-          </p>
+          <>
+            <p
+              className="rounded-[24px] border border-line bg-surface/70 px-6 py-5 text-center font-mono text-3xl tracking-[0.28em]"
+              data-testid="pairing-code"
+            >
+              {pairingToken}
+            </p>
+            <button
+              type="button"
+              className="flux-button flux-button--ghost"
+              onClick={() => {
+                const url = `${window.location.origin}/app/devices?join=${pairingToken}`;
+                void navigator.clipboard.writeText(url);
+              }}
+            >
+              Copy join link
+            </button>
+          </>
         ) : null}
 
         <form

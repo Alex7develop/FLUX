@@ -2,9 +2,15 @@ import { lazy } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import { AppShell } from '../layout/AppShell';
 import { PublicLayout } from '../layout/PublicLayout';
+import { BillingPage } from '../pages/BillingPage';
 import { DevicesPage } from '../pages/DevicesPage';
+import { GraphPage } from '../pages/GraphPage';
 import { InboxPage } from '../pages/InboxPage';
 import { LandingPage } from '../pages/LandingPage';
+import { LoginPage } from '../pages/LoginPage';
+import { SearchPage } from '../pages/SearchPage';
+import { SettingsPage } from '../pages/SettingsPage';
+import { SignupPage } from '../pages/SignupPage';
 import { PlaceholderPage } from '../pages/PlaceholderPage';
 
 const WorkspacePage = lazy(() =>
@@ -18,31 +24,10 @@ export const router = createBrowserRouter([
       { path: '/', element: <LandingPage /> },
       {
         path: '/pricing',
-        element: (
-          <PlaceholderPage
-            title="Pricing"
-            body="Subscriptions come later. This phase is the visual product shell."
-          />
-        ),
+        element: <BillingPage />,
       },
-      {
-        path: '/login',
-        element: (
-          <PlaceholderPage
-            title="Log in"
-            body="Authentication is not wired yet. The workspace is open for the visual demo."
-          />
-        ),
-      },
-      {
-        path: '/signup',
-        element: (
-          <PlaceholderPage
-            title="Sign up"
-            body="Accounts will arrive with the Supabase auth phase."
-          />
-        ),
-      },
+      { path: '/login', element: <LoginPage /> },
+      { path: '/signup', element: <SignupPage /> },
     ],
   },
   {
@@ -51,43 +36,17 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <WorkspacePage /> },
       { path: 'inbox', element: <InboxPage /> },
-      {
-        path: 'search',
-        element: (
-          <PlaceholderPage
-            title="Search"
-            body="Semantic search is a later layer. This route is reserved."
-          />
-        ),
-      },
-      {
-        path: 'graph',
-        element: (
-          <PlaceholderPage
-            title="Graph"
-            body="The knowledge graph is not live. The workspace canvas is conceptual only."
-          />
-        ),
-      },
+      { path: 'search', element: <SearchPage /> },
+      { path: 'graph', element: <GraphPage /> },
       { path: 'devices', element: <DevicesPage /> },
-      {
-        path: 'settings',
-        element: (
-          <PlaceholderPage
-            title="Settings"
-            body="Preferences, privacy, and account controls will live here."
-          />
-        ),
-      },
-      {
-        path: 'billing',
-        element: (
-          <PlaceholderPage
-            title="Billing"
-            body="Stripe is intentionally out of scope for this phase."
-          />
-        ),
-      },
+      { path: 'settings', element: <SettingsPage /> },
+      { path: 'billing', element: <BillingPage /> },
     ],
+  },
+  {
+    path: '*',
+    element: (
+      <PlaceholderPage title="Not found" body="That route is not part of this FLUX shell." />
+    ),
   },
 ]);

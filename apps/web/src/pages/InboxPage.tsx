@@ -24,8 +24,9 @@ export function InboxPage() {
             >
               <div>
                 <p className="font-medium">{item.title}</p>
+                <p className="mt-1 text-sm text-mute">{item.summary ?? item.mimeType}</p>
                 <p className="font-mono text-xs text-mute">
-                  {formatBytes(item.sizeBytes)} · {item.mimeType}
+                  {item.type ?? 'item'} · {formatBytes(item.sizeBytes)}
                 </p>
               </div>
               <button

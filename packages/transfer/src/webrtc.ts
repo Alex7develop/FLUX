@@ -7,9 +7,8 @@ interface WebRtcTransportOptions {
   signaling: SignalingClient;
   sessionId: string;
   peerId: string;
+  iceServers?: RTCIceServer[];
 }
-
-const ICE_SERVERS: RTCIceServer[] = [{ urls: 'stun:stun.l.google.com:19302' }];
 
 export class WebRtcTransport implements TransferTransport {
   private peer: RTCPeerConnection | undefined;
@@ -21,7 +20,9 @@ export class WebRtcTransport implements TransferTransport {
   constructor(private readonly options: WebRtcTransportOptions) {}
 
   async connect(): Promise<void> {
-    const peer = new RTCPeerConnection({ iceServers: ICE_SERVERS });
+    const peer = new RTCPeerConnection({
+      iceServers: this.options.iceServers ?? [{ urls: 'stun:stun.l.google.com:19302' }],
+    });
     this.peer = peer;
     const pendingIce: RTCIceCandidateInit[] = [];
     let remoteReady = false;

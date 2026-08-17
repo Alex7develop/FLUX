@@ -6,7 +6,7 @@
 
 FLUX is a premium cross-platform product for moving information between devices, then understanding, organizing, connecting, and finding it. Cross-platform transfer is the entry point. The long-term product is a universal inbox with AI understanding and a knowledge graph.
 
-This repository is currently in **Phase 0–2**: foundation, visual shell, and a real browser transfer layer. Auth, AI, billing, and the knowledge graph are not implemented.
+This repository is currently in **Phase 0–5** on the web: foundation, visual shell, chunked transfer, local understanding, graph/search, and account/billing boundaries. Phone ↔ laptop needs Supabase Realtime keys and, on hard NAT, TURN. There are no fake OpenAI or Stripe calls.
 
 ## Product vision
 
@@ -24,9 +24,10 @@ The web workspace at `/app` is a cinematic shell over a real transfer pipeline:
 2. Drop / paste / choose a file — the file is hashed, chunked, and sent as a `TransferManifest`.
 3. Without a peer, the same protocol runs locally and the item appears in Inbox.
 4. With a paired tab, bytes go over a WebRTC DataChannel.
-5. Success — “Got it.”
+5. Success — “Got it.” Inbox then classifies the item locally (URL, contact, receipt, image, PDF).
+6. Search and Graph read that same inbox. Login and billing stay honest until public keys exist.
 
-Pairing: `/app/devices` → create a 6-character code → join from another FLUX tab.
+Pairing: `/app/devices` → create a 6-character code or copy the join link. Same-origin tabs use BroadcastChannel. Across networks, set `VITE_SUPABASE_*` and optionally `VITE_TURN_*`.
 
 ## Architecture
 
@@ -104,10 +105,13 @@ Copy `.env.example`. Do not put a Supabase service-role key in any frontend app.
 | --- | --- |
 | `VITE_SUPABASE_URL` | Web |
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | Web |
+| `VITE_STUN_URLS` | Web (defaults to Google STUN) |
+| `VITE_TURN_URL` / `VITE_TURN_USERNAME` / `VITE_TURN_CREDENTIAL` | Web, optional |
+| `VITE_STRIPE_PUBLISHABLE_KEY` | Web, optional |
 | `EXPO_PUBLIC_SUPABASE_URL` | Mobile |
 | `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Mobile |
 
-Blank values are expected in this phase. Clients read config through `lib/supabase` and do not call Supabase.
+Blank values keep the app local. Never put a service-role or Stripe secret key in a frontend app. TURN credentials in `VITE_*` are visible in the browser; use a dedicated TURN user, not a root account.
 
 ## Development phases
 
@@ -115,10 +119,10 @@ Blank values are expected in this phase. Clients read config through `lib/supaba
 | --- | --- | --- |
 | 0 Foundation | This repo | Monorepo, types, tokens, tooling |
 | 1 Visual shell | This repo | Web canvas, drop, mobile shell |
-| 2 Transfer | This repo | Pairing codes, BroadcastChannel signaling, WebRTC chunks |
-| 3 Understand | Not started | AI / OCR pipeline behind `packages/ai` |
-| 4 Graph + search | Not started | Real graph, semantic retrieval |
-| 5 Accounts + billing | Not started | Supabase auth, Stripe |
+| 2 Transfer | This repo | Pairing, WebRTC chunks, BroadcastChannel or Supabase Realtime |
+| 3 Understand | This repo | Local classifier behind `packages/ai` |
+| 4 Graph + search | This repo | Graph and find over understood items |
+| 5 Accounts + billing | This repo | Auth/billing UI; live only with public keys |
 
 ## Design principles
 
@@ -136,6 +140,7 @@ Blank values are expected in this phase. Clients read config through `lib/supaba
 - [ADR 001 — monorepo](docs/decisions/001-monorepo.md)
 - [ADR 002 — web-first](docs/decisions/002-web-first.md)
 - [ADR 003 — BroadcastChannel signaling](docs/decisions/003-broadcast-signaling.md)
+- [ADR 004 — Supabase signaling](docs/decisions/004-supabase-signaling.md)
 - [Product vision](docs/product/vision.md)
 - [Security](docs/security/overview.md)
 
