@@ -1,5 +1,10 @@
-export interface TransferTransport {
-  connect(): Promise<void>;
-  send(): Promise<void>;
-  close(): void;
-}
+export type { TransferTransport } from './transport';
+export { DEFAULT_CHUNK_SIZE, createManifest } from './manifest';
+export { assembleChunks, splitBytes } from './chunk';
+export { assertChecksum, sha256Hex } from './hash';
+export { decodeControl, encodeControl } from './protocol';
+export type { ControlMessage } from './protocol';
+export { createLoopbackPair } from './loopback';
+export { receiveTransfer, sendTransfer } from './session';
+export type { ReceivedTransfer } from './session';
+export { WebRtcTransport } from './webrtc';

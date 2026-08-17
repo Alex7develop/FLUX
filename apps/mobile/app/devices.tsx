@@ -6,7 +6,8 @@ export default function DevicesScreen() {
     <View style={styles.screen}>
       <Text style={styles.title}>Devices</Text>
       <Text style={styles.body}>
-        Pairing is not live yet. Nearby phones, Macs, and Windows machines will show up here.
+        Pairing on web uses a short code and a WebRTC data channel. Native transfer will use the
+        same session types. For now, connect two FLUX browser tabs.
       </Text>
     </View>
   );

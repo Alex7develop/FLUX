@@ -10,7 +10,7 @@ FLUX is a TypeScript monorepo. The current milestone is a production-shaped foun
 | `validation` | Zod for untrusted data | React |
 | `design-tokens` | Visual constants | Components |
 | `ui` | Web visual system | Transfer, AI, auth |
-| `transfer` / `signaling` | Transport contracts | Browser RTC now |
+| `transfer` / `signaling` | Pairing, chunks, WebRTC | Cloud signaling, TURN |
 | `ai` | Analysis contract | A vendor SDK |
 | `graph` | Node/edge language | A graph database |
 | `analytics` | `track()` | File contents |
@@ -25,7 +25,7 @@ Web (`apps/web`) and mobile (`apps/mobile`) are delivery surfaces. They share ty
 
 ## Data that does not exist yet
 
-No Postgres, no object storage, no signaling server, no AI provider. `supabase/` is a reserved tree. Apps read env through `lib/supabase` and treat missing config as “not configured”.
+No Postgres, no object storage, no AI provider. Pairing uses BroadcastChannel in the same origin so two browser tabs can negotiate WebRTC without a FLUX server. Cross-device signaling will plug into the same `SignalingClient`. `supabase/` remains reserved.
 
 ## Error model
 

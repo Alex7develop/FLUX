@@ -1,10 +1,14 @@
 import { useId, useRef, useState } from 'react';
 import { cn } from '@flux/utils';
 
+export interface DropPayload {
+  files: File[];
+}
+
 interface FluxDropZoneProps {
   disabled?: boolean;
   busy?: boolean;
-  onActivate: () => void;
+  onActivate: (payload: DropPayload) => void;
 }
 
 export function FluxDropZone({ disabled = false, busy = false, onActivate }: FluxDropZoneProps) {
@@ -14,11 +18,11 @@ export function FluxDropZone({ disabled = false, busy = false, onActivate }: Flu
 
   const inactive = disabled || busy;
 
-  const activate = () => {
-    if (inactive) {
+  const activate = (files: FileList | File[] | null) => {
+    if (inactive || !files || files.length === 0) {
       return;
     }
-    onActivate();
+    onActivate({ files: Array.from(files) });
   };
 
   return (
@@ -42,7 +46,7 @@ export function FluxDropZone({ disabled = false, busy = false, onActivate }: Flu
       onDrop={(event) => {
         event.preventDefault();
         setDragging(false);
-        activate();
+        activate(event.dataTransfer.files);
       }}
     >
       <input
@@ -52,10 +56,8 @@ export function FluxDropZone({ disabled = false, busy = false, onActivate }: Flu
         type="file"
         disabled={inactive}
         onChange={(event) => {
-          if (event.target.files && event.target.files.length > 0) {
-            activate();
-            event.target.value = '';
-          }
+          activate(event.target.files);
+          event.target.value = '';
         }}
       />
       <button

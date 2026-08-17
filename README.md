@@ -6,7 +6,7 @@
 
 FLUX is a premium cross-platform product for moving information between devices, then understanding, organizing, connecting, and finding it. Cross-platform transfer is the entry point. The long-term product is a universal inbox with AI understanding and a knowledge graph.
 
-This repository is currently in **Phase 0 (foundation)** and **Phase 1 (visual shell)**. Transfer, auth, AI, billing, and the real graph are intentionally not implemented.
+This repository is currently in **Phase 0–2**: foundation, visual shell, and a real browser transfer layer. Auth, AI, billing, and the knowledge graph are not implemented.
 
 ## Product vision
 
@@ -18,15 +18,15 @@ DROP → TRANSFER → UNDERSTAND → ENRICH → CONNECT → SEARCH → ACT
 
 ## Core user experience (now)
 
-The web workspace at `/app` is a cinematic visual shell:
+The web workspace at `/app` is a cinematic shell over a real transfer pipeline:
 
 1. Idle — calm FLUX node, “Ready for anything.”
-2. Drop / paste / choose a file — demo state only, no upload.
-3. Processing — “Understanding…”
-4. Success — “Got it.”
-5. Return to idle.
+2. Drop / paste / choose a file — the file is hashed, chunked, and sent as a `TransferManifest`.
+3. Without a peer, the same protocol runs locally and the item appears in Inbox.
+4. With a paired tab, bytes go over a WebRTC DataChannel.
+5. Success — “Got it.”
 
-The drop interaction is a visual state machine. Real transfer will replace `runDropDemo` later without rewriting the shell.
+Pairing: `/app/devices` → create a 6-character code → join from another FLUX tab.
 
 ## Architecture
 
@@ -114,8 +114,8 @@ Blank values are expected in this phase. Clients read config through `lib/supaba
 | Phase | Status | Scope |
 | --- | --- | --- |
 | 0 Foundation | This repo | Monorepo, types, tokens, tooling |
-| 1 Visual shell | This repo | Web canvas, drop demo, mobile shell |
-| 2 Transfer | Not started | Pairing, signaling, WebRTC data channels |
+| 1 Visual shell | This repo | Web canvas, drop, mobile shell |
+| 2 Transfer | This repo | Pairing codes, BroadcastChannel signaling, WebRTC chunks |
 | 3 Understand | Not started | AI / OCR pipeline behind `packages/ai` |
 | 4 Graph + search | Not started | Real graph, semantic retrieval |
 | 5 Accounts + billing | Not started | Supabase auth, Stripe |
@@ -125,7 +125,7 @@ Blank values are expected in this phase. Clients read config through `lib/supaba
 - Dark, cinematic, restrained. Not a dashboard, not a file manager, not a chat app.
 - Motion communicates state. Reduced motion is respected.
 - Domain types live in one package. UI never talks to a provider SDK.
-- No fake backends. Demo visual state is explicit and replaceable.
+- No fake backends. Transfer uses the real chunk protocol even on a single device.
 - Keep the web bundle light. No Three.js, no AI SDKs, no graph libraries on the landing route.
 
 ## Docs
@@ -135,6 +135,7 @@ Blank values are expected in this phase. Clients read config through `lib/supaba
 - [Mobile](docs/architecture/mobile.md)
 - [ADR 001 — monorepo](docs/decisions/001-monorepo.md)
 - [ADR 002 — web-first](docs/decisions/002-web-first.md)
+- [ADR 003 — BroadcastChannel signaling](docs/decisions/003-broadcast-signaling.md)
 - [Product vision](docs/product/vision.md)
 - [Security](docs/security/overview.md)
 

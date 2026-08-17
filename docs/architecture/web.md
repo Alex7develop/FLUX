@@ -22,7 +22,9 @@ Placeholders: `/pricing`, `/login`, `/signup`, `/app/inbox`, `/app/search`, `/ap
 - `FluxDropZone` — keyboard, click, drag, disabled/busy
 - `FluxStatus` — human copy, not protocol errors
 
-The workspace calls `runDropDemo` in `apps/web/src/features/drop`. That function is the only demo sequencer. Real transfer should replace it, not the presentational components.
+Drop now runs the real transfer pipeline: hash → `TransferManifest` → chunks → ack. If a peer is connected, bytes go over a WebRTC DataChannel. If not, the same protocol runs over an in-process loopback and the item lands in the local inbox.
+
+Pairing lives on `/app/devices`. A host creates a 6-character code; another tab joins it. Tokens expire in five minutes and are single-use. The raw token is never stored — only its hash.
 
 ## Performance
 

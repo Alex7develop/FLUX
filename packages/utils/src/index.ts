@@ -1,3 +1,5 @@
+export { createId } from './id';
+
 export function cn(
   ...classes: Array<string | false | null | undefined>
 ): string {

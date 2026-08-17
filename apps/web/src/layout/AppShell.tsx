@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from 'react-router-dom';
 import { Suspense } from 'react';
+import { useFluxStore } from '../store/useFluxStore';
 
 const links = [
   { to: '/app', label: 'Workspace', end: true },
@@ -10,6 +11,8 @@ const links = [
 ];
 
 export function AppShell() {
+  const connected = useFluxStore((state) => state.connected);
+
   return (
     <div className="relative min-h-screen">
       <header className="sticky top-0 z-20 flex items-center justify-between gap-4 px-5 py-4 backdrop-blur-xl md:px-8">
@@ -32,7 +35,7 @@ export function AppShell() {
         </nav>
         <div className="flex items-center gap-4 text-xs text-mute">
           <span className="hidden font-mono tracking-[0.16em] uppercase sm:inline">
-            Web · local
+            {connected ? 'Web · connected' : 'Web · local'}
           </span>
           <NavLink to="/app/settings" className="hover:text-ink">
             Settings

@@ -108,6 +108,12 @@ importers:
       '@flux/design-tokens':
         specifier: workspace:*
         version: link:../../packages/design-tokens
+      '@flux/signaling':
+        specifier: workspace:*
+        version: link:../../packages/signaling
+      '@flux/transfer':
+        specifier: workspace:*
+        version: link:../../packages/transfer
       '@flux/types':
         specifier: workspace:*
         version: link:../../packages/types
@@ -181,9 +187,37 @@ importers:
 
   packages/graph: {}
 
-  packages/signaling: {}
+  packages/signaling:
+    dependencies:
+      '@flux/types':
+        specifier: workspace:*
+        version: link:../types
+      '@flux/utils':
+        specifier: workspace:*
+        version: link:../utils
+    devDependencies:
+      vitest:
+        specifier: ^3.0.4
+        version: 3.2.7(@types/node@26.2.0)(jiti@2.7.0)(jsdom@26.1.0)(lightningcss@1.32.0)(terser@5.50.0)
 
-  packages/transfer: {}
+  packages/transfer:
+    dependencies:
+      '@flux/signaling':
+        specifier: workspace:*
+        version: link:../signaling
+      '@flux/types':
+        specifier: workspace:*
+        version: link:../types
+      '@flux/utils':
+        specifier: workspace:*
+        version: link:../utils
+      '@flux/validation':
+        specifier: workspace:*
+        version: link:../validation
+    devDependencies:
+      vitest:
+        specifier: ^3.0.4
+        version: 3.2.7(@types/node@26.2.0)(jiti@2.7.0)(jsdom@26.1.0)(lightningcss@1.32.0)(terser@5.50.0)
 
   packages/types: {}
 

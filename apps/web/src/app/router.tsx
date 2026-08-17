@@ -2,6 +2,8 @@ import { lazy } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import { AppShell } from '../layout/AppShell';
 import { PublicLayout } from '../layout/PublicLayout';
+import { DevicesPage } from '../pages/DevicesPage';
+import { InboxPage } from '../pages/InboxPage';
 import { LandingPage } from '../pages/LandingPage';
 import { PlaceholderPage } from '../pages/PlaceholderPage';
 
@@ -48,15 +50,7 @@ export const router = createBrowserRouter([
     element: <AppShell />,
     children: [
       { index: true, element: <WorkspacePage /> },
-      {
-        path: 'inbox',
-        element: (
-          <PlaceholderPage
-            title="Inbox"
-            body="Everything that enters FLUX will land here after transfer and understanding."
-          />
-        ),
-      },
+      { path: 'inbox', element: <InboxPage /> },
       {
         path: 'search',
         element: (
@@ -75,15 +69,7 @@ export const router = createBrowserRouter([
           />
         ),
       },
-      {
-        path: 'devices',
-        element: (
-          <PlaceholderPage
-            title="Devices"
-            body="Pairing and device presence will be added with signaling and WebRTC."
-          />
-        ),
-      },
+      { path: 'devices', element: <DevicesPage /> },
       {
         path: 'settings',
         element: (
