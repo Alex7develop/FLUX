@@ -1,0 +1,42 @@
+:root {
+  --flux-bg: #05060a;
+  --flux-surface: #0b0e16;
+  --flux-surface-elevated: #121624;
+  --flux-text-primary: #f3f5fb;
+  --flux-text-secondary: #8b93a7;
+  --flux-border: rgba(243, 245, 251, 0.08);
+  --flux-accent: #6ec8ff;
+  --flux-accent-muted: rgba(110, 200, 255, 0.16);
+  --flux-accent-secondary: #8b7cff;
+  --flux-success: #5eead4;
+  --flux-error: #fb7185;
+
+  --flux-space-1: 4px;
+  --flux-space-2: 8px;
+  --flux-space-3: 12px;
+  --flux-space-4: 16px;
+  --flux-space-5: 24px;
+  --flux-space-6: 32px;
+  --flux-space-7: 48px;
+  --flux-space-8: 64px;
+  --flux-space-9: 96px;
+
+  --flux-radius-sm: 8px;
+  --flux-radius-md: 14px;
+  --flux-radius-lg: 24px;
+  --flux-radius-pill: 999px;
+
+  --flux-shadow-glow: 0 0 80px rgba(110, 200, 255, 0.18);
+  --flux-shadow-elevated: 0 24px 80px rgba(0, 0, 0, 0.45);
+  --flux-blur-glass: 24px;
+
+  --flux-duration-fast: 160ms;
+  --flux-duration-base: 280ms;
+  --flux-duration-slow: 520ms;
+  --flux-duration-pulse: 2400ms;
+  --flux-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --flux-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --flux-font-sans: 'Plus Jakarta Sans', 'Segoe UI', sans-serif;
+  --flux-font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}

@@ -1,0 +1,22 @@
+{
+  "expo": {
+    "name": "FLUX",
+    "slug": "flux",
+    "scheme": "flux",
+    "version": "0.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "plugins": ["expo-router"],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.flux.app"
+    },
+    "android": {
+      "package": "com.flux.app"
+    }
+  }
+}
