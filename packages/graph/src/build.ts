@@ -32,15 +32,65 @@ export function buildItemGraph(items: GraphItem[]): { nodes: GraphNode[]; edges:
   return { nodes, edges };
 }
 
-export function searchItems<T extends { title: string; summary?: string; type?: string }>(
-  items: T[],
-  query: string,
-): T[] {
+export function orbitGraph(nodes: GraphNode[]): Array<GraphNode & { angle?: number }> {
+  const spread = (list: GraphNode[], start: number) =>
+    list.map((node, index) => ({
+      ...node,
+      angle: start + (list.length === 0 ? 0 : (360 / list.length) * index),
+    }));
+
+  return [
+    ...nodes.filter((node) => node.kind === 'flux'),
+    ...spread(
+      nodes.filter((node) => node.kind === 'item'),
+      -150,
+    ),
+    ...spread(
+      nodes.filter((node) => node.kind === 'entity'),
+      15,
+    ),
+    ...spread(
+      nodes.filter((node) => node.kind === 'device'),
+      90,
+    ),
+  ];
+}
+
+export function searchItems<T extends {
+  title: string;
+  summary?: string;
+  type?: string;
+  entities?: Array<{ type: string; name: string }>;
+}>(items: T[], query: string): T[] {
   const needle = query.trim().toLowerCase();
   if (!needle) {
     return items;
   }
-  return items.filter((item) =>
-    [item.title, item.summary, item.type].some((value) => value?.toLowerCase().includes(needle)),
-  );
+  return items.filter((item) => {
+    const fields = [
+      item.title,
+      item.summary,
+      item.type,
+      ...(item.entities ?? []).flatMap((entity) => [entity.name, entity.type]),
+    ];
+    return fields.some((value) => value?.toLowerCase().includes(needle));
+  });
+}
+
+export function relatedItemIds(
+  graph: { nodes: GraphNode[]; edges: GraphEdge[] },
+  nodeId: string,
+): string[] {
+  const itemIds = new Set(graph.nodes.filter((node) => node.kind === 'item').map((node) => node.id));
+  if (itemIds.has(nodeId)) {
+    return [nodeId];
+  }
+  return [
+    ...new Set(
+      graph.edges
+        .filter((edge) => edge.from === nodeId || edge.to === nodeId)
+        .map((edge) => (edge.from === nodeId ? edge.to : edge.from))
+        .filter((id) => itemIds.has(id)),
+    ),
+  ];
 }

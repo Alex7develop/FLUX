@@ -18,7 +18,7 @@ export function SearchPage() {
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           className="rounded-full border border-line bg-transparent px-4 py-3 text-ink outline-none focus-visible:border-accent"
-          placeholder="receipt, linear, contact…"
+          placeholder="189, 10.08, receipt…"
         />
       </label>
       <ul className="mt-8 grid gap-3">

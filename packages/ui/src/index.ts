@@ -1,6 +1,6 @@
 export { FluxButton } from './FluxButton';
 export { FluxCanvas } from './FluxCanvas';
-export { FluxConnections, satelliteLayout } from './FluxConnections';
+export { FluxConnections, connectionPoint, satelliteLayout } from './FluxConnections';
 export type { ConceptualEdge, ConceptualNode } from './FluxConnections';
 export { FluxDropZone } from './FluxDropZone';
 export type { DropPayload } from './FluxDropZone';

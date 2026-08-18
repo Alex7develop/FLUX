@@ -2,7 +2,7 @@ import type { FluxVisualState } from '@flux/types';
 
 export interface ConceptualNode {
   id: string;
-  kind: 'device' | 'item' | 'flux';
+  kind: 'device' | 'item' | 'entity' | 'flux';
   label: string;
   angle?: number;
 }
@@ -27,7 +27,7 @@ interface Point {
   y: number;
 }
 
-function positionFor(node: ConceptualNode, width: number, height: number): Point {
+export function connectionPoint(node: ConceptualNode, width: number, height: number): Point {
   const cx = width / 2;
   const cy = height / 2;
   if (node.kind === 'flux') {
@@ -35,7 +35,8 @@ function positionFor(node: ConceptualNode, width: number, height: number): Point
   }
 
   const angle = node.angle ?? 0;
-  const radius = Math.min(width, height) * 0.32;
+  const radius =
+    node.kind === 'entity' ? Math.min(width, height) * 0.42 : Math.min(width, height) * 0.28;
   return {
     x: cx + Math.cos((angle * Math.PI) / 180) * radius,
     y: cy + Math.sin((angle * Math.PI) / 180) * radius,
@@ -64,8 +65,8 @@ export function FluxConnections({
         if (!from || !to) {
           return null;
         }
-        const start = positionFor(from, width, height);
-        const end = positionFor(to, width, height);
+        const start = connectionPoint(from, width, height);
+        const end = connectionPoint(to, width, height);
         return (
           <line
             key={edge.id}
