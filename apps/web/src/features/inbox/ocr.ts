@@ -8,7 +8,10 @@ export async function recognizeImageText(input: { mimeType: string; bytes: Array
   try {
     const { recognize } = await import('tesseract.js');
     const blob = new Blob([input.bytes], { type: input.mimeType });
-    const { data } = await recognize(blob, 'eng');
+    const { data } = await recognize(blob, 'rus+eng');
+    if ((data.confidence ?? 0) < 50) {
+      return undefined;
+    }
     const text = data.text?.replace(/\s+/g, ' ').trim();
     return text || undefined;
   } catch {

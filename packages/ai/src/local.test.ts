@@ -16,6 +16,29 @@ describe('LocalAIProcessor', () => {
     expect(result.actions[0]?.id).toBe('save-expense');
   });
 
+  it('does not treat a dotted date as a phone number', async () => {
+    const result = await processor.analyzeImage({
+      mimeType: 'image/png',
+      fileName: 'IMG_1042.PNG',
+      text: [
+        'Счет на оплату',
+        'ПРИХОДНЫЙ КАССОВЫЙ ОРДЕР',
+        'КВИТАНЦИЯ',
+        '110.08.2026',
+        '10.08.2026',
+        '10 августа 2026 г.',
+        'Кириллов Александр Борисович',
+        '189 руб. 63 коп.',
+      ].join('\n'),
+    });
+    expect(result.type).toBe('receipt');
+    expect(result.title).toMatch(/189/);
+    expect(result.entities.some((entity) => entity.type === 'date' && entity.name === '10.08.2026')).toBe(
+      true,
+    );
+    expect(result.entities.some((entity) => entity.type === 'phone')).toBe(false);
+  });
+
   it('turns OCR text on an image into a contact', async () => {
     const result = await processor.analyzeImage({
       mimeType: 'image/png',
@@ -24,6 +47,18 @@ describe('LocalAIProcessor', () => {
     });
     expect(result.type).toBe('contact');
     expect(result.entities.some((entity) => entity.type === 'email')).toBe(true);
+  });
+
+  it('does not show garbage OCR as the image summary', async () => {
+    const result = await processor.analyzeImage({
+      mimeType: 'image/png',
+      fileName: 'IMG_0581.png',
+      text: '. E~J 14:05 MERC 83 | | Vrsepwana nocrasoanenson Fockowrars Poa ar 18.0858 Na 8 KBUTAHUMSA',
+    });
+    expect(result.type).toBe('image');
+    expect(result.title).toBe('IMG_0581.png');
+    expect(result.summary).toBe('An image.');
+    expect(result.summary).not.toMatch(/Vrsepwana|KBUTAHUMSA/);
   });
 
   it('reads a URL', async () => {
