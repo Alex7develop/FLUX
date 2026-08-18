@@ -29,6 +29,21 @@ test('two tabs can pair with a connection code', async ({ browser }) => {
   await context.close();
 });
 
+test('dropped file appears in inbox', async ({ page }) => {
+  await page.goto('/app');
+  await page.locator('input[type=file]').setInputFiles({
+    name: 'shot.png',
+    mimeType: 'image/png',
+    buffer: Buffer.from(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+      'base64',
+    ),
+  });
+  await expect(page.getByText('Got it.')).toBeVisible({ timeout: 10_000 });
+  await page.goto('/app/inbox');
+  await expect(page.getByTestId('inbox-item')).toBeVisible();
+});
+
 test('search and graph routes render', async ({ page }) => {
   await page.goto('/app/search');
   await expect(page.getByRole('heading', { name: 'Search' })).toBeVisible();

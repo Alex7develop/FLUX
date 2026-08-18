@@ -123,6 +123,7 @@ Blank values keep the app local. Never put a service-role or Stripe secret key i
 | 3 Understand | This repo | Local classifier behind `packages/ai` |
 | 4 Graph + search | This repo | Graph and find over understood items |
 | 5 Accounts + billing | This repo | Auth/billing UI; live only with public keys |
+| Inbox | This repo | Cards, previews, filters, IndexedDB blobs |
 
 ## Design principles
 
