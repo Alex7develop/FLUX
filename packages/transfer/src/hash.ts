@@ -1,8 +1,8 @@
 import { checksumFailedError, type FluxError } from '@flux/types';
+import { sha256Hex as hashHex } from '@flux/utils';
 
 export async function sha256Hex(data: ArrayBuffer): Promise<string> {
-  const digest = await crypto.subtle.digest('SHA-256', new Uint8Array(data));
-  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, '0')).join('');
+  return hashHex(data);
 }
 
 export async function assertChecksum(bytes: ArrayBuffer, expected: string): Promise<void> {

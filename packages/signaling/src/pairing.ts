@@ -1,6 +1,6 @@
 import type { PairingSession } from '@flux/types';
 import { pairingExpiredError } from '@flux/types';
-import { createId } from '@flux/utils';
+import { createId, sha256Hex } from '@flux/utils';
 
 export const PAIRING_TTL_MS = 5 * 60 * 1000;
 export const TOKEN_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -16,9 +16,7 @@ export function generatePairingToken(random: () => number = Math.random): string
 }
 
 export async function hashPairingToken(token: string): Promise<string> {
-  const encoded = new TextEncoder().encode(token.trim().toUpperCase());
-  const digest = await crypto.subtle.digest('SHA-256', encoded);
-  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, '0')).join('');
+  return sha256Hex(new TextEncoder().encode(token.trim().toUpperCase()));
 }
 
 export async function createPairingSession(

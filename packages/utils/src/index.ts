@@ -1,4 +1,5 @@
 export { createId } from './id';
+export { sha256Hex } from './sha256';
 
 export function cn(
   ...classes: Array<string | false | null | undefined>
