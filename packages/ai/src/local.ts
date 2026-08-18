@@ -48,12 +48,24 @@ export class LocalAIProcessor implements AIProcessor {
     };
   }
 
-  async analyzeImage(input: { mimeType: string; fileName: string }): Promise<Understanding> {
+  async analyzeImage(input: { mimeType: string; fileName: string; text?: string }): Promise<Understanding> {
+    const ocr = input.text?.trim();
+    if (ocr) {
+      const fromText = await this.analyzeText(ocr);
+      if (fromText.type !== 'text') {
+        return {
+          ...fromText,
+          title: fromText.title,
+          summary: `${fromText.summary} Read from the image.`,
+        };
+      }
+    }
+
     const screenshot = /screenshot|screen shot/i.test(input.fileName);
     return {
       type: screenshot ? 'screenshot' : 'image',
       title: input.fileName,
-      summary: screenshot ? 'A captured screen.' : 'An image.',
+      summary: ocr?.slice(0, 140) || (screenshot ? 'A captured screen.' : 'An image.'),
       entities: [],
       actions: [{ id: 'save', label: 'Save' }],
     };

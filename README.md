@@ -120,7 +120,7 @@ Blank values keep the app local. Never put a service-role or Stripe secret key i
 | 0 Foundation | This repo | Monorepo, types, tokens, tooling |
 | 1 Visual shell | This repo | Web canvas, drop, mobile shell |
 | 2 Transfer | This repo | Pairing, WebRTC chunks, BroadcastChannel or Supabase Realtime |
-| 3 Understand | This repo | Local classifier behind `packages/ai` |
+| 3 Understand | This repo | Local classifier + OCR text on larger images |
 | 4 Graph + search | This repo | Graph and find over understood items |
 | 5 Accounts + billing | This repo | Auth/billing UI; live only with public keys |
 | Inbox | This repo | Cards, previews, filters, IndexedDB blobs |

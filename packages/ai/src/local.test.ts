@@ -16,6 +16,16 @@ describe('LocalAIProcessor', () => {
     expect(result.actions[0]?.id).toBe('save-expense');
   });
 
+  it('turns OCR text on an image into a contact', async () => {
+    const result = await processor.analyzeImage({
+      mimeType: 'image/png',
+      fileName: 'IMG_1042.PNG',
+      text: 'Ada Lovelace ada@flux.dev',
+    });
+    expect(result.type).toBe('contact');
+    expect(result.entities.some((entity) => entity.type === 'email')).toBe(true);
+  });
+
   it('reads a URL', async () => {
     const result = await processor.analyzeUrl('https://www.linear.app/changelog');
     expect(result.type).toBe('url');

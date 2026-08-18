@@ -8,6 +8,7 @@ import { iceServersFromEnv } from './iceFromEnv';
 import { storeInboxBlob } from './inboxBlobs';
 import { runLocalTransfer } from './runLocalTransfer';
 import { createAppSignalingClient } from './signalingFactory';
+import { recognizeImageText } from '../inbox/ocr';
 
 const peerId = createId('peer');
 
@@ -41,7 +42,7 @@ async function enrichItem(
 ) {
   const text = input.mimeType.startsWith('text/')
     ? new TextDecoder().decode(input.bytes)
-    : undefined;
+    : await recognizeImageText(input);
   store().setVisualState('processing');
   const understanding = await understandFile(processor, {
     fileName: input.fileName,

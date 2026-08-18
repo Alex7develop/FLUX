@@ -10,7 +10,7 @@ export interface Understanding {
 
 export interface AIProcessor {
   analyzeText(input: string): Promise<Understanding>;
-  analyzeImage(input: { mimeType: string; fileName: string }): Promise<Understanding>;
+  analyzeImage(input: { mimeType: string; fileName: string; text?: string }): Promise<Understanding>;
   analyzeDocument(input: { mimeType: string; fileName: string }): Promise<Understanding>;
   analyzeUrl(input: string): Promise<Understanding>;
 }
