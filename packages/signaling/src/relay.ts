@@ -1,6 +1,6 @@
 export interface SignalRelay {
   publish(topic: string, message: unknown): Promise<void>;
-  subscribe(topic: string, handler: (message: unknown) => void): () => void;
+  subscribe(topic: string, handler: (message: unknown) => void): Promise<() => void>;
 }
 
 export function createMemoryRelay(): SignalRelay {
@@ -12,7 +12,7 @@ export function createMemoryRelay(): SignalRelay {
         handler(message);
       }
     },
-    subscribe(topic, handler) {
+    async subscribe(topic, handler) {
       const listeners = topics.get(topic) ?? new Set();
       listeners.add(handler);
       topics.set(topic, listeners);
@@ -38,7 +38,7 @@ export function createBroadcastRelay(): SignalRelay {
     async publish(topic, message) {
       open(topic).postMessage(message);
     },
-    subscribe(topic, handler) {
+    async subscribe(topic, handler) {
       const channel = open(topic);
       const onMessage = (event: MessageEvent<unknown>) => handler(event.data);
       channel.addEventListener('message', onMessage);

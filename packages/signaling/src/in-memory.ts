@@ -38,7 +38,7 @@ export function createInMemorySignalingHub() {
           listener(message);
         }
       },
-      onSignal(handler) {
+      async onSignal(handler) {
         const wrapped = (message: SignalMessage) => {
           if (message.from !== peerId) {
             handler(message);

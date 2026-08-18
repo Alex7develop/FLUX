@@ -24,8 +24,8 @@ test('two tabs can pair with a connection code', async ({ browser }) => {
   await guest.getByPlaceholder('K7M2QX').fill(code);
   await guest.getByRole('button', { name: /join device/i }).click();
 
-  await expect(host.getByText('Connected')).toBeVisible({ timeout: 20_000 });
-  await expect(guest.getByText('Connected')).toBeVisible({ timeout: 20_000 });
+  await expect(host.getByTestId('device-connection')).toHaveText('Connected', { timeout: 20_000 });
+  await expect(guest.getByTestId('device-connection')).toHaveText('Connected', { timeout: 20_000 });
   await context.close();
 });
 

@@ -102,7 +102,7 @@ export function DevicesPage() {
         ) : null}
       </div>
 
-      <p className="mt-8 font-mono text-xs tracking-[0.18em] text-mute uppercase">
+      <p className="mt-8 font-mono text-xs tracking-[0.18em] text-mute uppercase" data-testid="device-connection">
         {connected ? 'Connected' : visualState === 'pairing' ? 'Waiting' : 'Not connected'}
       </p>
       {lastError ? <p className="mt-3 text-sm text-danger">{lastError}</p> : null}

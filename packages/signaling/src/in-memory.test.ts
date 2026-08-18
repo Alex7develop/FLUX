@@ -13,7 +13,7 @@ describe('in-memory signaling', () => {
     expect(joined.id).toBe(created.id);
 
     const received: string[] = [];
-    const stop = guest.onSignal((message) => {
+    const stop = await guest.onSignal((message) => {
       if (message.type === 'offer') {
         received.push(String(message.payload));
       }

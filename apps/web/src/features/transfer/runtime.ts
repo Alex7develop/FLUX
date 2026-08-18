@@ -107,6 +107,8 @@ export async function startHostPairing(): Promise<string> {
     iceServers: iceServersFromEnv(),
   });
 
+  await transport.prepare?.();
+
   void transport
     .connect()
     .then(() => {
